@@ -1,0 +1,33 @@
+from Jenga import *
+
+with workspace("Salle"):
+    configurations(["Debug", "Release"])
+    targetoses([TargetOS.WINDOWS])
+    targetarchs([TargetArch.X86_64])
+
+    with project("ModuleB"):
+        staticlib()
+        language("C++")
+        cppdialect("C++17")
+        location("ModuleB")
+        files(["src/ModuleB.cpp"])
+        includedirs(["include"])
+
+    with project("ModuleA"):
+        staticlib()
+        language("C++")
+        cppdialect("C++17")
+        location("ModuleA")
+        files(["src/ModuleA.cpp"])
+        includedirs(["include", "../ModuleB/include"])
+        links(["ModuleB"])
+        dependson(["ModuleB"])
+
+    with project("Salle"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["src/main.cpp"])
+        includedirs(["ModuleA/include", "ModuleB/include"])
+        links(["ModuleA"])
+        dependson(["ModuleA"])
