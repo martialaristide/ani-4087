@@ -1,0 +1,18 @@
+from Jenga import *
+
+with workspace("Salle"):
+    configurations(["Debug", "Release"])
+    targetoses([TargetOS.WINDOWS, TargetOS.LINUX])
+    targetarchs([TargetArch.X86_64])
+
+    with project("Salle"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["src/main.cpp"])
+
+        with filter("system:Windows"):
+            links(["user32", "gdi32", "opengl32", "dinput8", "dxguid", "winmm"])
+
+        with filter("system:Linux"):
+            links(["pthread", "X11", "Xext", "GL"])
