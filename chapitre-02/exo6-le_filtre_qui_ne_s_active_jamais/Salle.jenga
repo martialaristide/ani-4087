@@ -1,0 +1,18 @@
+from Jenga import *
+
+with workspace("Salle"):
+    configurations(["Debug", "Release"])
+    targetoses([TargetOS.WINDOWS])
+    targetarchs([TargetArch.X86_64])
+
+    with project("Salle"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["src/main.cpp"])
+
+        with filter("system:Windows"):
+            defines(["FILTRE_ACTIF"])
+        
+
+
