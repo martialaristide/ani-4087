@@ -1,0 +1,92 @@
+from Jenga import *
+
+with workspace("Salle"):
+    configurations(["Debug", "Release"])
+    targetoses([TargetOS.WINDOWS])
+    targetarchs([TargetArch.X86_64])
+
+    with project("Salle"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["src/**.cpp", "include/**.hpp"])
+
+        with filter("config:Debug"):
+            defines(["_DEBUG", "DEBUG"])
+            optimize("Off")
+            symbols(True)
+
+        with filter("config:Release"):
+            defines(["NDEBUG"])
+            optimize("Speed")
+            symbols(False)
+
+        # ===== Feuille de route du livre =========================================
+        # Une ligne par sprint a venir : ce qu'il faudra ajouter ici. A decocher
+        # (ou a completer/verifier) au fur et a mesure que chaque sprint est fait.
+
+        # [ ] Sprint 3 - NKWindow et NKEvent : passer consoleapp() en
+        #     windowedapp(), ajouter nkentseudependson(["NKWindow", "NKEvent", ...])
+        #     et lier les bibliotheques systeme d'ouverture de fenetre (ex.
+        #     user32/gdi32 sous Windows, deja vues dans NKXRDemo.jenga).
+
+        # [ ] Sprint 4 - NKRHI et NKRenderer : ajouter les dependances NKRHI et
+        #     NKRenderer, lier une API graphique (opengl32/d3d11/d3d12 selon
+        #     l'OS) et probablement un define du type NK_RHI_VK_ENABLED ou
+        #     equivalent selon le backend graphique choisi.
+
+        # [ ] Sprint 5 - Images, modeles, textes, sons : ajouter NKImage,
+        #     NKFont et vraisemblablement un module audio ; prevoir des
+        #     includedirs/files pour des assets (textures, polices, sons).
+
+        # [ ] Sprint 6 - La tete, l'orientation et les deux yeux : rien de
+        #     nouveau cote build a priori (NKMath deja present) mais verifier
+        #     qu'aucune dependance mathematique/orientation ne manque.
+
+        # [ ] Sprint 7 - La cadence et la prediction : la boucle de frame XR
+        #     (WaitFrame/predictedDisplayTime) ; verifier NKTime et NKXR dans
+        #     les dependances si pas deja fait au sprint precedent.
+
+        # [ ] Sprint 8 - Les chaines d'echange : ajouter la gestion des
+        #     swapchains (creation, redimensionnement) - probablement toujours
+        #     via NKXR, sans nouvelle dependance de build si NKXR est deja la.
+
+        # [ ] Sprint 9 - Les actions : le systeme d'actions XR (selectionner,
+        #     viser, deplacer, vibrer) - a priori deja couvert par la
+        #     dependance NKXR, a confirmer selon la structure du module.
+
+        # [ ] Sprint 10 - La composition et les couches : la passe de
+        #     composition finale (couches de projection) - verifier si un
+        #     sous-module de NKRenderer/NKXR distinct doit etre ajoute.
+
+        # [ ] Sprint 11 - Lire le vrai backend, et la meme application sur
+        #     deux backends : prevoir un moyen de choisir/detecter le backend
+        #     XR (reel vs simulateur) au build ou a l'execution - possiblement
+        #     un define ou une option de configuration.
+
+        # [ ] Sprint 12 - Rendre deux fois : le rendu par oeil (cibles
+        #     offscreen dupliquees) - a priori sans nouvelle dependance de
+        #     build, deja couvert par NKRenderer/NKRHI.
+
+        # [ ] Sprint 13 - La porte s'ouvre : titre narratif, sens technique
+        #     incertain - probablement une etape du cycle de vie de session
+        #     (ex. transition Ready -> Begin) ; a preciser une fois le sprint
+        #     ouvert.
+
+        # [ ] Sprint 14 - Des panneaux qu'on lit, et le son qui place les
+        #     choses : texte/overlay lisible (deja NKFont ?) et audio
+        #     spatialise - verifier si un module audio dedie doit etre ajoute
+        #     s'il ne l'a pas ete au sprint 5.
+
+        # [ ] Sprint 15 - Quelqu'un d'autre entre : titre narratif, sens
+        #     technique incertain - possiblement reseau/multi-utilisateur ou
+        #     un second point d'entree (main/controleur) ; a preciser une fois
+        #     le sprint ouvert.
+
+        # [ ] Sprint 16 - Batir et livrer : configuration de build de
+        #     livraison (Release durci, packaging, peut-etre un installateur
+        #     ou une archive de distribution) - au-dela d'un simple
+        #     optimize("Speed"), prevoir la production d'un artefact livrable.
+
+        # [ ] Sprint 17 - Approfondissement : contenu libre/avance, aucune
+        #     ligne de build previsible a l'avance.
