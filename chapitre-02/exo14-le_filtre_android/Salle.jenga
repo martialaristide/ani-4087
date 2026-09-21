@@ -1,0 +1,20 @@
+from Jenga import *
+
+with workspace("Salle"):
+    configurations(["Debug", "Release"])
+    targetoses([TargetOS.WINDOWS, TargetOS.ANDROID])
+    targetarchs([TargetArch.X86_64, TargetArch.ARM64])
+
+    with project("Salle"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["src/main.cpp"])
+
+        with filter("system:Windows"):
+            links(["user32", "gdi32"])
+
+        with filter("system:Android"):
+            usetoolchain("android-ndk")
+            defines(["ANDROID", "NK_ANDROID"])
+            links(["android", "log", "EGL", "GLESv3", "dl"])
