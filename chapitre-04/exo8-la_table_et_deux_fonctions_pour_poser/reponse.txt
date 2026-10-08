@@ -1,0 +1,59 @@
+Lignes avant les fonctions :
+Pour placer les neuf pieces de ma salle (le plateau, les quatre pieds, et les
+quatre objets tabouret/repere/lampe/livre) sans aucune fonction de pose, il
+faut ecrire une formule a la main pour chacune :
+
+  int yPlateau = H - ep / 2;
+
+  int xPied1 = tx - (L / 2 - pied); int zPied1 = tz - (P / 2 - pied); int yPied1 = (H - ep) / 2;
+  int xPied2 = tx + (L / 2 - pied); int zPied2 = tz - (P / 2 - pied); int yPied2 = (H - ep) / 2;
+  int xPied3 = tx - (L / 2 - pied); int zPied3 = tz + (P / 2 - pied); int yPied3 = (H - ep) / 2;
+  int xPied4 = tx + (L / 2 - pied); int zPied4 = tz + (P / 2 - pied); int yPied4 = (H - ep) / 2;
+
+  int yTabouret = syTabouret / 2;
+  int yRepere   = syRepere / 2;
+  int yLampe    = H + syLampe / 2;
+  int yLivre    = H + syLivre / 2;
+
+Cela fait 1 ligne pour le plateau, 3 lignes par pied (x, z, y) soit 12 lignes
+pour les quatre pieds, et 1 ligne par objet pose soit 4 lignes : 1 + 12 + 4 =
+17 lignes de calcul de position, chacune recopiee et modifiee a la main a
+partir de la precedente.
+
+Lignes apres :
+Avec PoserAuSol et PoserSurTable, chaque piece devient un seul appel :
+
+  Point3 plateau = {tx, H - ep / 2, tz};
+
+  Point3 pied1 = PoserAuSol(tx - (L / 2 - pied), tz - (P / 2 - pied), H - ep);
+  Point3 pied2 = PoserAuSol(tx + (L / 2 - pied), tz - (P / 2 - pied), H - ep);
+  Point3 pied3 = PoserAuSol(tx - (L / 2 - pied), tz + (P / 2 - pied), H - ep);
+  Point3 pied4 = PoserAuSol(tx + (L / 2 - pied), tz + (P / 2 - pied), H - ep);
+
+  Point3 tabouret = PoserAuSol(xTabouret, zTabouret, syTabouret);
+  Point3 repere   = PoserAuSol(xRepere, zRepere, syRepere);
+  Point3 lampe    = PoserSurTable(xLampe, zLampe, syLampe, H);
+  Point3 livre    = PoserSurTable(xLivre, zLivre, syLivre, H);
+
+Cela fait 1 ligne pour le plateau (toujours a part, puisque c'est la seule
+piece dont on connait le dessus et non le centre) et 1 ligne par pied ou
+objet, soit 1 + 4 + 4 = 9 lignes. Le calcul de la demi-hauteur ou de
+l'addition a H ne se trouve plus qu'a deux endroits dans tout le fichier, a
+l'interieur des deux fonctions, au lieu d'etre recopie neuf fois.
+
+L'erreur que la fonction m'evite :
+Dans la version a la main, chaque objet pose demandait de choisir la bonne
+formule au bon endroit : sy / 2 pour un objet au sol, H + sy / 2 pour un
+objet sur la table. En copiant une ligne existante pour en ecrire une
+nouvelle, il est facile d'oublier de changer H + sy / 2 en sy / 2 (ou
+l'inverse), ou d'oublier la division par deux et d'ecrire H + sy au lieu de
+H + sy / 2.
+Exemple calcule avec livre (sy = 40, pose sur la table, H = 750) : la bonne
+formule donne y = 750 + 40 / 2 = 770, le livre repose juste au-dessus du
+plateau. Si on avait par erreur recopie la formule du plateau (H - sy / 2)
+au lieu de celle de la table, on aurait eu y = 750 - 20 = 730, soit 40
+millimetres plus bas : le livre se serait enfonce dans le plateau au lieu
+de reposer dessus, et rien dans le programme ne l'aurait signale.
+Avec PoserAuSol et PoserSurTable, cette decision ne se prend plus qu'une
+fois par fonction, pas une fois par objet : il n'y a plus de ligne a
+recopier, donc plus de copie a corriger.
