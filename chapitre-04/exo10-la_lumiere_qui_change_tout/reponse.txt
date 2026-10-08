@@ -1,0 +1,50 @@
+Ce que la direction change :
+Dans direction.png, j'ai invers l'axe X de la direction du soleil (0.4,-1,-0.3
+au lieu de -0.4,-1,-0.3). Le resultat le plus visible n'est pas une simple
+rotation de l'ombre : le pilier devient un blanc uniforme, sans face sombre,
+et il n'y a plus AUCUNE ombre portee au sol, meme sous les spheres. En
+comparant avec intensite.png et ombre.png (meme direction de base que dans
+lumiere.cpp), ou le pilier montre clairement une face eclairee et une face
+dans l'ombre : c'est cette difference de face a face, pas l'intensite, qui
+donne au pilier son volume et ancre les spheres au sol. Cote resultat.txt,
+c'est exactement ce que mesure la CONTRASTE : pour mon soleil "salle"
+(direction -400,-1000,-300), le calcul donne SOL 2833 contre ENTREE et
+DROIT a 150, soit un contraste de 2683 -- une direction oblique repartit
+la lumiere tres inegalement entre les cinq faces, et c'est cette inegalite
+que l'oeil lit comme une orientation. Fait a signaler honnetement : la
+disparition totale des ombres portees dans cette capture ne vient
+probablement pas de la direction elle-meme (le soleil garde castShadow
+actif), mais d'un effet de bord du cache d'ombre statique du moteur
+(shadowStatic), qui semble ne pas s'etre reconstruit correctement pour
+cette nouvelle direction. Je le note plutot que de l'ignorer.
+
+Ce que l'intensite change :
+Dans intensite.png, j'ai divise l'intensite du soleil par deux (1.5 au lieu
+de 3), sans toucher a la direction ni a l'ombre. La scene devient
+globalement plus sombre, et la grille de points verts (qui etait
+entierement allumee dans direction.png) s'eteint en grande partie. Les
+ombres, elles, restent aux memes endroits : seule leur force relative
+change, pas leur position. Cela correspond exactement a la formule de
+lumiere.cpp : lumiere = ambiante + I * max(0, c), ou I multiplie
+directement la contribution du soleil. Diviser I par deux divise quasiment
+par deux l'ecart entre la face la plus eclairee et la plus sombre (le
+CONTRASTE), sans changer QUELLE face est la plus eclairee. Une salle trop
+peu intense finit par se lire presque plate, meme si le soleil est bien
+oriente : la direction donne la forme du contraste, l'intensite en donne
+l'amplitude.
+
+Ce que l'ombre change :
+Dans ombre.png, j'ai desactive castShadow sur le soleil uniquement
+(NK_SUN_SHADOW=0), direction et intensite restant identiques a la base.
+Les ombres au sol sous les spheres et sous le pilier sont toujours la :
+ma salle a aussi une lumiere rouge, une bleue et un spot, qui gardent
+chacune leur propre ombre, donc couper l'ombre d'UNE SEULE lumiere ne
+suffit pas a vider la salle de ses ombres portees. Ce qui change vraiment
+entre ombre.png et intensite.png, c'est le motif d'ombre sur la grille de
+points verts, plus clairsemee une fois l'ombre du soleil retiree de ce
+calcul. La vraie lecon est la : l'ombre est un reglage par lumiere, pas un
+interrupteur global de la salle, et une salle qui perd TOUTES ses ombres
+(comme on l'a vu, accidentellement, dans direction.png) perd son ancrage au
+sol : les objets flottent au lieu de reposer dessus, et l'oeil ne lit plus
+la distance correctement. C'est exactement le risque que decrit l'enonce
+pour un casque.
