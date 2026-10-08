@@ -1,0 +1,33 @@
+Mes deux medianes :
+Avec la configuration ALL (tous les sous-systemes actifs), la mediane de
+demarrage sur mes 10 essais reels est de 2386 ms. Avec la configuration MINI
+(uniquement NK_SS_RENDER3D | NK_SS_SHADOW), la mediane est de 2295 ms.
+L'ecart entre les deux medianes est donc de 91 ms : la configuration reduite
+demarre un peu plus vite, ce qui est coherent puisqu'elle initialise moins
+de sous-systemes (pas de texte, pas d'UI, pas de post-process, etc.).
+
+L'ecart est-il significatif :
+Pas vraiment, ou du moins pas de facon flagrante. 91 ms represente a peine
+4% du temps de demarrage typique (environ 2300-2400 ms), et cet ecart est
+plus petit que la dispersion observee a l'interieur d'un seul groupe : mes
+essais ALL vont de 2289 ms a 3364 ms (un ecart interne de plus de 1000 ms),
+et mes essais MINI vont de 1824 ms a 2423 ms (pres de 600 ms d'ecart interne).
+Autrement dit, la variabilite d'une machine qui lance deux fois la MEME
+configuration est deja plus grande que la difference entre les deux
+configurations. Pour conclure a un ecart vraiment significatif, il faudrait
+soit plus de mesures, soit un test statistique formel (par exemple un test
+de Mann-Whitney), plutot que de se fier a la seule difference des medianes.
+
+Pourquoi la mediane et pas la moyenne :
+Parce que la moyenne est tres sensible aux valeurs extremes, alors que la
+mediane ne l'est pas. Dans mes essais ALL, deux lancements (3364 ms et
+3047 ms) sont nettement plus lents que les huit autres, probablement a
+cause d'un demarrage a froid du cache disque ou d'une interference du
+systeme (antivirus, autre processus) au moment precis du test. Ces deux
+valeurs isolees tirent la moyenne ALL vers le haut (2552 ms) bien au-dessus
+de la mediane (2386 ms), ce qui exagere artificiellement l'impact mesure.
+La mediane, elle, se contente de regarder le milieu de la serie triee : un
+ou deux essais anormalement lents ne changent presque rien a sa valeur.
+C'est pour cela que, pour comparer deux configurations sur la base de
+mesures de temps reel (bruitees par nature), la mediane donne une image
+plus fiable et plus stable du cas "typique" que la moyenne.
