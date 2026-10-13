@@ -1,0 +1,5 @@
+=== Ligne reelle du moteur, logs/app.log (chargement de la texture avec ses dimensions) ===
+[2026-10-13 22:41:36.989] [INF] [default] [NkTextureLibrary.cpp:395 in Load] -> [NkTextureLibrary] Texture chargee : murs/mur_brique.jpg (1080x809 sRGB)
+
+=== Ligne de verification ajoutee pour cet exercice ===
+[2026-10-13 22:41:36.989] [INF] [default] [Demo3D.cpp:2833 in Demo3D_Init] -> [ANI4087][exo4] Load('murs/mur_brique.jpg') -> valide=oui, ok=oui

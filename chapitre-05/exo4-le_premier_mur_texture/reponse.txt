@@ -1,0 +1,34 @@
+Ma texture :
+murs/mur_brique.jpg est une vraie photo de mur prise au telephone (la meme
+que celle de l'exercice 1 de ce chapitre), 1080x809 pixels, chargee une
+seule fois avant la boucle de frame avec texLib->Load(). Le journal confirme
+ce chargement unique et ses dimensions reelles : "Texture chargee :
+murs/mur_brique.jpg (1080x809 sRGB)". Le materiau est cree juste apres avec
+NkMaterial::Create(..., NK_PBR_METALLIC), recoit la texture via
+SetAlbedoMap(), et porte un carrelage de 1 metre via
+SetTriplanarTileSize(1.0f) pour que la photo se repete au lieu de s'etirer
+sur toute la largeur du mur.
+
+Ce que le mur a gagne :
+Sur avant.png, le mur est d'une couleur plate et neutre (l'albedo par
+defaut du materiau, sans aucune texture) : on voit bien qu'un pave existe la,
+mais sa surface ne donne aucune information de matiere ni d'echelle -- un
+mur gris uni, pour reprendre les mots de l'enonce. Sur apres.png, le meme
+mur, au meme endroit et sous le meme angle de vue, affiche nettement les
+bandes horizontales de la vraie photo de mur, avec ses variations de teinte
+et de luminosite propres a la prise de vue reelle. Le pave a gagne une
+matiere : l'oeil peut desormais estimer sa distance et reconnaitre une
+surface physique plutot qu'une simple forme coloriee.
+
+Ce qui m'a bloque :
+Le chemin n'a pas bloque ici -- contrairement a l'exercice 2, murs/mur_
+brique.jpg existe reellement et se charge sans probleme (ok=oui dans le
+journal). Le vrai point delicat etait de produire avant.png et apres.png du
+MEME mur au MEME point de vue sans dupliquer le code : comme ce mur est un
+tout nouveau pave (il n'existait pas avant cet exercice), il n'y avait pas
+d'etat "avant" naturel a capturer. J'ai donc ajoute un interrupteur
+(NK_EXO4_TEXTURE=0/1, lu une seule fois a l'Init) qui cree toujours le
+materiau mais ne lui donne la texture que si la variable vaut 1 -- ce qui
+permet de capturer les deux etats avec exactement le meme binaire et la
+meme camera, seule la variable d'environnement changeant entre les deux
+lancements.
