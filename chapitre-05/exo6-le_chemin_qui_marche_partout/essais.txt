@@ -1,0 +1,33 @@
+avant, projet : ca marche. Lance depuis la racine du projet
+(/c/Users/Lenovo/Nkentseu/Nkentseu), le chemin relatif murs/mur_brique.jpg
+pointe directement vers le bon fichier puisque le dossier courant EST la
+racine du projet. Journal (logs/app.log) : "[NkTextureLibrary.cpp:395 in
+Load] -> [NkTextureLibrary] Texture chargee : murs/mur_brique.jpg (1080x809
+sRGB)" puis "[Demo3D.cpp:2833 in Demo3D_Init] -> [ANI4087][exo4]
+Load('murs/mur_brique.jpg') -> valide=oui, ok=oui".
+
+avant, Build : ca casse. Lance depuis Build/Bin/Release-Windows/renderdemo/
+(ou se trouve renderdemo.exe), le meme chemin relatif murs/mur_brique.jpg
+est desormais cherche depuis CE dossier, ou il n'existe pas -- le mur
+retombe sur la texture d'erreur du moteur (meme mecanisme silencieux que
+l'exercice 2), sans aucun plantage visible a l'ecran. Journal (ecrit cette
+fois sous Build/Bin/Release-Windows/renderdemo/logs/app.log) :
+"[NkTextureLibrary.cpp:374 in Load] -> [NkTextureLibrary] Echec chargement
+texture : murs/mur_brique.jpg" puis "[Demo3D.cpp:2833 in Demo3D_Init] ->
+[ANI4087][exo4] Load('murs/mur_brique.jpg') -> valide=oui, ok=non".
+
+apres, projet : ca marche toujours. Lance depuis la racine du projet,
+LocateResource trouve le fichier des l'etape 1 (tel quel, dossier courant)
+et renvoie le chemin inchange. Journal : "[Demo3D.cpp:2887 in Demo3D_Init]
+-> [ANI4087][exo6] LocateResource('murs/mur_brique.jpg') ->
+'murs/mur_brique.jpg'" puis "[ANI4087][exo4] Load('murs/mur_brique.jpg') ->
+valide=oui, ok=oui".
+
+apres, Build : ca marche maintenant. Lance depuis
+Build/Bin/Release-Windows/renderdemo/, l'etape 1 echoue (le fichier n'est
+pas la), mais l'etape 3 (remontee de 4 dossiers parents depuis le dossier de
+l'executable) retombe exactement sur la racine du projet et trouve le
+fichier. Journal : "[Demo3D.cpp:2887 in Demo3D_Init] -> [ANI4087][exo6]
+LocateResource('murs/mur_brique.jpg') ->
+'C:/Users/Lenovo/Nkentseu/Nkentseu/Build/Bin/Release-Windows/renderdemo/../../../../murs/mur_brique.jpg'"
+puis "[ANI4087][exo4] Load(...) -> valide=oui, ok=oui".

@@ -1,0 +1,37 @@
+Ce qui a change :
+Rien dans le code de rendu n'a change entre les deux lancements d'avant la
+correction -- c'est le DOSSIER COURANT du processus qui change, et avec lui
+la cible reelle d'un chemin relatif comme murs/mur_brique.jpg. Lance depuis
+la racine du projet, ce chemin se resout contre cette racine et trouve le
+fichier. Lance depuis Build/Bin/Release-Windows/renderdemo/ (ou vit
+l'executable), le MEME chemin se resout contre CE dossier, ou murs/
+n'existe pas. Le code de NkTextureLibrary::Load() est identique dans les
+deux cas ; seul l'environnement d'execution differe. C'est exactement la
+raison pour laquelle cette panne ne depend d'aucun telephone : n'importe
+quel changement de dossier de lancement la reproduit a l'identique sur ma
+propre machine.
+
+Ce que LocateResource essaie :
+Notre variante (le vrai NkPath.h n'ayant pas de fonction de ce nom) cherche
+dans l'ordre : 1) le chemin tel quel depuis le dossier courant -- ce qui
+couvre le cas "projet" ; 2) le meme chemin ancre au dossier de l'executable
+(NkPath::GetExecutableDirectory()) -- utile si les ressources sont copiees a
+cote du binaire, comme dans un paquet mobile ; 3) le meme chemin en
+remontant jusqu'a 4 dossiers parents de l'executable -- le cas precis de ce
+projet, ou l'executable vit sous Build/Bin/<config>-<os>/<nom>/ et remonter
+4 niveaux retombe exactement sur la racine ou se trouve murs/. Si aucune des
+trois etapes ne trouve le fichier, la fonction renvoie une chaine VIDE
+plutot qu'un chemin invente, pour que l'appelant puisse tester Empty()
+avant d'appeler Load() -- exactement le piege que l'enonce signalait.
+
+Deja vu avec fopen :
+Oui, je l'ai reconnu avant meme de lancer le premier test : c'est le piege
+classique du chemin relatif qui depend du repertoire de travail courant,
+deja croise avec de simples fopen() qui echouaient silencieusement des
+qu'un programme etait lance depuis un dossier different de celui prevu par
+son auteur. Ce qui m'a davantage surpris ici, c'est la facon dont ce moteur
+masque l'echec : pas de code de retour bruyant ni de plantage, juste un
+retour silencieux sur la texture d'erreur (meme mecanisme que l'exercice 2
+avec murs/nexistepas.png) -- il a fallu lire le journal, pas regarder
+l'ecran, pour confirmer que le chargement avait reellement echoue derriere
+un mur a l'air normal.
