@@ -1,0 +1,32 @@
+atlas : 512 x 512
+image : 72 x 32
+
+Ma police et sa taille :
+J'ai utilise la police embarquee Inter (NkEmbeddedFontId::Inter) a 32 pixels,
+celle que l'enonce demandait explicitement. C'est une police d'interface
+proportionnelle, proche de Segoe UI, choisie par le moteur pour rester lisible
+a petite taille sans fichier TTF externe. L'atlas genere pour cette seule
+police (6 lettres distinctes dans "Sortie", avec repetition de "o"/"r"/"t") a
+pris 512 x 512 pixels malgre la petite quantite de texte : c'est la taille
+minimale du pack-shelf de l'atlas, pas une mesure de la taille reelle du mot.
+
+A trois metres :
+A cette distance la camera voit tout le pave au-dessus de la porte mais le
+panneau reste petit dans le cadre : le mot "Sortie" est lisible en entier et
+a l'endroit, sans etre deforme, mais il occupe une petite portion de l'image.
+Peu des 72 x 32 pixels de panneau.png finissent par couvrir beaucoup de
+pixels ecran : la resolution de la texture source n'est pas le facteur
+limitant ici, c'est la taille apparente (angulaire) du panneau qui est petite.
+
+A cinquante centimetres :
+Rapproche a cette distance, le mot occupe une bien plus grande part de
+l'image (confirme en comparant les deux fichiers PNG directement : le
+panneau est visiblement plus grand sur cinquante-cm.png que sur
+trois-metres.png). C'est la ou la taille de l'atlas devient pertinente :
+chaque lettre ne vient que d'un petit rectangle UV a l'interieur d'un atlas
+de 512 x 512, lui-meme rempli par une police rasterisee a 32 pixels de haut
+seulement. En zoomant physiquement (en s'approchant), on agrandit la MEME
+image source de 72 x 32 pixels sans lui ajouter de detail : la police aurait
+du etre chargee a une taille plus grande (ou un atlas sdfMode) pour rester
+nette a cinquante centimetres plutot qu'a lisser simplement plus de pixels
+identiques.
