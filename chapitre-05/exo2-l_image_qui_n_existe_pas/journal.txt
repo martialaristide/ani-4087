@@ -1,0 +1,6 @@
+=== Test niveau bas : NkImage::Load direct (console, NkFormatsTest.exe) ===
+charge : 0, valide : 0, largeur : 0, hauteur : 0
+
+=== Lignes reelles extraites de logs/app.log (run renderdemo --demo=2) ===
+[2026-10-13 21:42:38.989] [ERR] [default] [NkTextureLibrary.cpp:374 in Load] -> [NkTextureLibrary] Echec chargement texture : murs/nexistepas.png
+[2026-10-13 21:42:38.989] [INF] [default] [Demo3D.cpp:2805 in Demo3D_Init] -> [ANI4087][exo2] Load('murs/nexistepas.png') -> valide=oui, texture_erreur=oui

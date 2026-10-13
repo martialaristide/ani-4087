@@ -1,0 +1,38 @@
+Ce que rend Load :
+Les deux niveaux de l'API ne reagissent pas pareil face a un chemin absent.
+Au niveau bas, NkImage::Load("murs/nexistepas.png") renvoie carrement false,
+et l'objet reste a zero sur toute la ligne : valide=0, largeur=0, hauteur=0
+(journal.txt). C'est honnete et sans ambiguite : rien n'a ete charge, point.
+Au niveau haut en revanche, NkTextureLibrary::Load() renvoie un NkTexHandle
+dont IsValid() repond "oui" -- alors meme que le chargement a reellement
+echoue (le log montre l'erreur "Echec chargement texture : murs/nexistepas.
+png" juste avant). La seule facon de detecter le vrai echec est de comparer
+l'id du handle a celui de texLib->GetError() : les deux sont identiques, donc
+texture_erreur=oui. IsValid() ne verifie que la forme du handle, pas si le
+fichier source existe reellement.
+
+Pourquoi rien ne plante :
+NkImage::Load() utilise un code de retour (bool) plutot qu'une exception ou un
+crash : l'appelant doit explicitement verifier le resultat, mais rien
+n'interrompt le programme s'il ne le fait pas -- l'image reste juste vide et
+valide. NkTextureLibrary va plus loin : en cas d'echec de chargement, elle
+substitue silencieusement une texture de secours (celle renvoyee par
+GetError()) au lieu de renvoyer un handle invalide ou de stopper le rendu.
+Ce choix de conception protege le reste de la scene (les 15 spheres, les murs
+voisins, la grille de materiaux) d'un plantage pour une seule ressource
+manquante -- mais il deplace la responsabilite de la detection sur le
+developpeur, qui doit explicitement comparer les ids pour distinguer un vrai
+succes d'un echec deguise.
+
+Ce que montre le mur :
+Sur mur-absent.png, on voit un grand panneau rose/magenta uni, sans aucun
+motif ni relief, pose exactement a l'endroit ou le mur a texture absente a
+ete soumis au renderer (position -4, 1.5, -4 ; echelle 4x1x3). La geometrie
+du mur est bien la -- le plan existe, il est eclaire, son ombre ne plante
+rien -- mais sa surface est remplacee par ce magenta uniforme : c'est la
+texture d'erreur de secours du moteur (texLib->GetError()), la meme que
+celle detectee dans le log (texture_erreur=oui). Concretement, le joueur en
+VR ne verrait jamais un trou noir ou un crash a la place d'une texture
+manquante : il verrait ce mur rose bien identifiable, un signal visuel clair
+pour le developpeur qu'une ressource manque, sans jamais casser
+l'experience de la scene.
