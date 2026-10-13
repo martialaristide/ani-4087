@@ -1,0 +1,44 @@
+Ce que la comparaison montre :
+NK_NEAREST est le seul des quatre a vraiment differer du bilineaire : 6589
+pixels sur 65536 (256x256) changent sur au moins un canal, soit environ 10%
+de l'image -- coherent avec un filtre qui prend le pixel le plus proche au
+lieu d'une moyenne ponderee, donc des arretes plus dures et un echantillonnage
+different. NK_BICUBIC et NK_LANCZOS3, en revanche, affichent zero difference
+avec le bilineaire, au pixel pres, sur les quatre canaux. Ce n'est pas une
+coincidence ni une erreur de mesure : le code source de NkImage::Resize (Nk
+Image.cpp, autour de la ligne 2853) porte le commentaire explicite "NK_BICUBIC
+et NK_LANCZOS3 ne sont pas encore implementes ici" et bascule sur le meme
+chemin bilineaire pour ces deux valeurs d'enum. L'en-tete de l'enum (NkImage.h)
+decrit NK_BICUBIC comme "meilleure qualite, plus lent" et NK_LANCZOS3 comme
+"qualite maximale, lent" -- mais le code reellement execute ne fait pas cette
+difference : c'est l'exemple meme donne par l'enonce d'un resultat qui
+contredit l'en-tete sans etre une erreur de ma part.
+
+L'ecart de temps que j'accepte :
+Les trois filtres qui passent par le chemin bilineaire (BILINEAR, BICUBIC,
+LANCZOS3) se tiennent dans une fourchette de 2155 a 2346 us, soit moins de
+9% d'ecart entre eux -- ce qui est simplement le bruit de mesure habituel
+d'une boucle de vingt iterations (allocations, cache, ordonnancement de l'OS),
+pas une difference d'algorithme puisque c'est litteralement le meme code qui
+tourne. L'ecart que j'accepte comme "le meme filtre" est donc de l'ordre de
+10% autour de la valeur moyenne du bilineaire. En revanche, l'ecart entre
+NK_NEAREST (661 us) et les trois autres (environ 2200-2350 us) est un facteur
+3 a 3,5 : la, l'ecart est reel et vient de l'algorithme lui-meme (acces direct
+a un seul pixel contre interpolation ponderee sur plusieurs voisins), pas du
+bruit. Un ecart de ce facteur-la, repete de maniere constante sur les vingt
+iterations, ne peut pas s'expliquer par le bruit de la boucle de mesure.
+
+Dans quel contexte :
+Pour une texture de mur en VR qu'on reduit une seule fois au chargement (hors
+boucle de frame), le cout en microsecondes de n'importe lequel des quatre
+filtres est negligeable face au temps de chargement total -- choisir
+NK_BILINEAR (le filtre reellement vise par l'enonce du chapitre) reste donc
+le bon choix par defaut, surtout vu que NK_BICUBIC et NK_LANCZOS3 ne donnent
+aujourd'hui aucune qualite supplementaire dans ce moteur : ce sont des alias
+du bilineaire, pas de meilleurs filtres. NK_NEAREST, malgre sa rapidite,
+degraderait visiblement la texture (effet pixelise, 10% des pixels deja
+visiblement differents) et n'a de sens que pour des assets volontairement
+"retro" ou pour des textures d'UI ou de masque ou l'aliasing est tolere, ou
+encore dans une boucle de reduction executee des milliers de fois par
+seconde (ex: generation procedurale en temps reel) ou le facteur 3x devient,
+lui, significatif.
