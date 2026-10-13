@@ -1,0 +1,38 @@
+Mon format pour un mur :
+PNG.
+
+Pourquoi :
+Sur ma photo (1080 x 809), BMP pese 2 621 214 octets contre 87 184 pour PNG :
+30 fois plus gros pour zero gain de qualite, puisque BMP ne compresse rien.
+Aucune raison de le garder pour une texture de mur. QOI, lui, est lisible et
+reste tres loin de BMP (183 361 octets), mais il est quand meme deux fois
+plus gros que PNG sur cette photo precise (183 361 contre 87 184) : sa
+reputation de format "leger et rapide" ne s'est pas verifiee ici, ce qui
+confirme qu'il faut mesurer plutot que supposer. JPEG en qualite 90 est le
+plus petit des formats relisibles (27 112 octets, trois fois moins que
+PNG), mais c'est un format compresse avec perte : il recree l'image a
+partir de blocs de frequences approximes et sous-echantillonne la
+chrominance, ce qui introduit un bruit de bloc visible surtout sur les
+bords nets et le texte, et qui s'accumule un peu plus a chaque nouvel
+enregistrement si on reouvre puis resauvegarde le fichier. Pour un mur en
+beton sans details fins ni texte, ces pertes seraient probablement peu
+visibles, mais dans un casque on peut s'approcher tres pres de n'importe
+quelle surface, et je préfère ne pas parier sur une perte "probablement
+invisible" pour gagner 60 Ko sur un seul mur. PNG reste sans perte, se
+relit avec les bonnes dimensions a chaque fois, et sa taille (85 Ko) reste
+largement raisonnable pour une texture de mur.
+
+Ce qui m'a surpris :
+Le TGA que mon programme vient d'ecrire (2 621 204 octets, donc non
+compresse comme le BMP) ne se relit pas du tout : Load() echoue dessus.
+Le moteur n'a pas plante a l'ecriture, et je n'ai pas remplace ce resultat
+en silence : formats.txt porte bien "TGA : 2621204 octets, illisible",
+exactement le cas que l'enonce decrit. Deuxieme surprise : QOI, souvent
+presente comme une alternative plus simple et plus rapide que PNG, est ici
+plus LOURD que PNG sur ma propre photo, alors que je m'attendais a
+l'inverse. Troisieme chose notee : mon JPEG reencode par le moteur en
+qualite 90 pese 27 112 octets, presque le double du JPEG d'origine pris par
+mon telephone (14 682 octets) pour la meme image, ce qui montre que deux
+encodeurs JPEG ne produisent pas du tout la meme taille pour un meme
+reglage de qualite nominal : le chiffre "90" ne veut rien dire sans savoir
+quel encodeur l'applique.
