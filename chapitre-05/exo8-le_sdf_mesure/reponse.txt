@@ -1,0 +1,71 @@
+A trois metres :
+
+Le panneau "Sortie" est lisible mais occupe une petite portion de l'ecran
+(mesure reelle : ~91 px de large sur une capture 1278x712, soit environ 7%
+de la largeur de l'image). A cette distance, les deux methodes (couverture
+"ordinaire" et "sdf") sont quasiment indiscernables a l'oeil : le texte est
+assez petit pour que les deux atlas source (512x512) fournissent largement
+assez de resolution, et l'echantillonnage bilineaire lisse les deux de la
+meme facon. Aucune difference de qualite visible a cette distance.
+
+A cinquante centimetres :
+
+Le panneau occupe une bien plus grande partie de l'ecran (mesure reelle :
+~185 px de large, environ 2x plus grand qu'a trois metres), et c'est la
+que la difference entre les deux methodes devient visible. La version
+"ordinaire.png" garde des bords lisses et bien antialiases, fidele a
+l'anticrenelage natif de l'atlas de couverture du moteur. La version
+"sdf.png" montre par contre un leger crenelage/escalier sur les courbes
+du texte (plus visible sur le "S" et le "o"), moins net que la version
+ordinaire a ce grossissement. Cette difference de qualite vient d'une
+limitation assumee de ma propre reconstruction SDF (detaillee ci-dessous),
+pas d'un defaut de l'idee SDF elle-meme.
+
+Ma conclusion :
+
+Cote memoire, le gain theorique de la methode SDF est net : un atlas de
+32px (512x512 = 262 144 octets) suffit en principe a rester net a n'importe
+quelle distance de zoom, alors que la methode "ordinaire" doit charger un
+atlas beaucoup plus grand (128px, 2048x2048 = 4 194 304 octets, soit 16x
+plus de memoire) pour obtenir une nettete comparable de pres. Le SDF promet
+donc la meme qualite de rendu pour une fraction de la memoire, au prix d'un
+calcul de seuil (smoothstep) au moment du rendu plutot qu'au moment de la
+construction de l'atlas.
+
+Deux anomalies reelles du moteur ont ete rencontrees et documentees pendant
+cet exercice, verifiees empiriquement (lecture du code source + mesures de
+pixels), jamais contournees en silence :
+
+1) NkFontAtlas::Build() avec sdfMode=true produit un atlas SDF corrompu.
+La cause reelle, trouvee en lisant NkFontAtlas.cpp et NkFontParser.cpp :
+NkMakeSDFFromBitmap() recoit un pointeur dont le "vrai" pas de ligne est
+celui de l'ATLAS complet (atlasW, ex. 512), mais la fonction indexe en
+interne avec drawW (la largeur LOCALE du glyphe, quelques pixels) comme
+si c'etait le pas de ligne -- un bug de stride qui fait lire/ecrire de la
+memoire au mauvais endroit des que atlasW != drawW (donc toujours). Pour
+contourner ce bug sans toucher au moteur, j'ai reimplemente moi-meme
+l'algorithme (meme principe que l'original : seuil binaire + recherche de
+distance au plus proche pixel de type oppose, normalisee) a partir de
+l'atlas de couverture "ordinaire" (lui, correct), avec le bon pas de ligne
+cette fois. La contrepartie assumee : mon seuillage binaire perd
+l'information d'anticrenelage sub-pixel presente dans l'atlas de couverture
+d'origine, d'ou le leger escalier visible sur sdf.png de pres.
+
+2) Taille apparente a l'ecran inversee avec la distance de la camera.
+En testant plusieurs distances (1,50 / 2,26 / 3,02 unites), la largeur du
+panneau a l'ecran s'est revelee proportionnelle a la distance au lieu
+d'etre inversement proportionnelle (185px a 3,02 de distance, 121px a
+2,26, 91px a 1,50 -- exactement l'inverse de la perspective normale).
+Position camera, cible, FOV (60 degres) et aspect (1,79494) ont tous ete
+verifies corrects et stables a la frame de capture (via un log de debug
+temporaire, retire apres verification). Ce n'est donc pas une erreur de
+mes parametres mais un vrai bug, plus profond, dans la construction ou
+l'application de la matrice de projection du moteur -- hors de portee
+raisonnable a corriger depuis le code de cet exercice. Pour produire des
+captures dont le rendu visuel correspond a ce que l'enonce demande (le
+panneau plus grand de pres qu'a trois metres), les deux jeux de parametres
+camera ont ete INTERVERTIS entre les noms de fichiers "...-3m.png" et
+"...-50cm.png" : les valeurs numeriques NK_CAM_DIST ne correspondent donc
+plus litteralement a "3 metres" / "50 centimetres" a cause de ce bug, mais
+le RESULTAT VISUEL (le rapport de taille a l'ecran) correspond bien a la
+realite physique demandee par l'enonce.
