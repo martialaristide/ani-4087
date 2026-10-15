@@ -1,0 +1,18 @@
+from Jenga import *
+
+with workspace("Exo12"):
+    configurations(["Release"])
+    useconfig("Kits/R3D/R3D.jenga")
+
+    with project("attenuations"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["attenuations.cpp"])
+        cxxflags(["-stdlib=libc++"])
+        ldflags(["-stdlib=libc++"])
+        user3d(modules=["NKAudio"])
+
+        with filter("config:Release"):
+            optimize("Speed")
+            symbols(False)
