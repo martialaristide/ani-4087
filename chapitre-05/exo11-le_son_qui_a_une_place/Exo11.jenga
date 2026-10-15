@@ -1,0 +1,31 @@
+from Jenga import *
+
+with workspace("Exo11"):
+    configurations(["Release"])
+    useconfig("Kits/R3D/R3D.jenga")
+
+    with project("mesure"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["mesure.cpp"])
+        cxxflags(["-stdlib=libc++"])
+        ldflags(["-stdlib=libc++"])
+        user3d(modules=["NKAudio"])
+
+        with filter("config:Release"):
+            optimize("Speed")
+            symbols(False)
+
+    with project("son-place"):
+        windowedapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["son-place.cpp"])
+        cxxflags(["-stdlib=libc++"])
+        ldflags(["-stdlib=libc++"])
+        user3d(modules=["NKAudio", "NKWindow"])
+
+        with filter("config:Release"):
+            optimize("Speed")
+            symbols(False)
