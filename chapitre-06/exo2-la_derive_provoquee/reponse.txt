@@ -1,0 +1,11 @@
+Ma sensibilité :
+0,002 radian par compte du capteur, soit environ 0,1146 degré par compte. Je l'ai gardée pour toute la mesure.
+
+Vitesse de dérive : 39,4 deg/s
+Calculée sur deux lignes éloignées de derive.txt : à t = 8,0 s le lacet vaut 458,1 deg, à t = 19,0 s il vaut 891,2 deg. (891,2 - 458,1) / (19,0 - 8,0) = 433,1 / 11 = 39,4 deg/s. J'ai écarté les lignes avant t = 8 s, où la colonne brut change encore (11, 1, 0, -1, 1) : la souris bougeait encore un peu.
+
+D'où vient ce chiffre :
+Sur toutes les lignes de derive.txt, brut vaut 1, alors que je ne touche plus à la souris. À chaque image, le programme ajoute au lacet brut x sensibilité = 1 x 0,002 rad = 0,1146 deg. Les images vont de 2793 à t = 8,0 s à 6572 à t = 19,0 s : 3779 images en 11 s, soit 343,5 images par seconde. Donc 0,1146 deg x 343,5 images/s = 39,4 deg/s, ce qui est exactement ce que j'ai mesuré sur les lacets. Le chiffre dépend de ma sensibilité et de la cadence de mon programme (environ 343 images par seconde chez moi) : sur une autre machine il serait différent, mais il s'expliquerait de la même façon.
+
+Pourquoi elle ne s'arrête pas :
+La colonne brut reste à 1 de t = 6 s à t = 19 s sans jamais revenir à 0, alors que la souris est immobile. Le module d'entrées garde le delta du dernier événement brut sans jamais le remettre à zéro : l'écriture écrase la valeur précédente et personne ne la consomme. Mon programme relit cette valeur à chaque image et l'ajoute au lacet sans rien accumuler ni vider, donc il rejoue indéfiniment le dernier déplacement. Tant que la souris ne produit pas un nouvel événement, la valeur reste à 1 et la tête continue de tourner. La correction consiste à s'abonner aux événements, accumuler soi-même et remettre à zéro après chaque lecture.
