@@ -1,0 +1,11 @@
+Lecture du module :
+Avec la lecture directe de NkInput.MouseRawDeltaX() à chaque image, le lacet "lu" ne s'arrête pas quand la souris s'arrête : de t = 10,0 s à t = 22,0 s il passe de 478,4 à 957,0 degrés, soit (957,0 - 478,4) / 12 = 39,9 deg/s, sans que je touche à la souris. Il dérive de façon régulière : la valeur lue rejoue à chaque image le dernier déplacement que le module a gardé (un seul compte, soit 0,1146 degré par image avec ma sensibilité de 0,002 rad par compte).
+
+Accumulé et vidé :
+Avec les événements bruts accumulés, lus une fois par image puis vidés, le lacet "vide" reste immobile dès que la souris s'arrête : il vaut 65,5 degrés de t = 9 s à t = 22 s, soit une vitesse de 0 deg/s. Ces 65,5 degrés sont le déplacement réel que j'ai fait à la souris : 65,5 / 0,1146 = environ 572 comptes du capteur. La tête s'est tournée de ce que j'ai bougé, et pas plus.
+
+Accumulé sans vidage :
+Avec la même accumulation mais sans jamais remettre l'accumulateur à zéro, le lacet "sans vidage" explose : de t = 10,0 s à t = 22,0 s il passe de 201 796,8 à 475 518,4 degrés, soit (475 518,4 - 201 796,8) / 12 = 22 810 deg/s. L'accumulateur contient en permanence le total de tous les déplacements reçus depuis le départ, environ 572 comptes, et chaque image ajoute ce total entier au lacet, c'est-à-dire 65,5 degrés par image. 22 810 / 65,5 donne environ 348 images par seconde, ce qui correspond à la cadence de mon programme. Avec la souris immobile l'accumulateur ne change plus, mais son contenu est quand même rajouté à chaque image : le lacet grandit sans fin. Même en bougeant, le lacet était déjà à 4 246 degrés à t = 1 s.
+
+Ce que fait le vidage :
+Le vidage remet l'accumulateur à zéro juste après sa lecture, donc chaque événement n'est compté qu'une seule fois : l'image suivante ne lit que ce qui est arrivé depuis. Sans lui, le même déplacement est compté à chaque image, ce qui reproduit chez moi le défaut que je contournais. La différence est de nature : la lecture directe rejoue le dernier déplacement (1 compte par image, 39,9 deg/s), alors que l'accumulation sans vidage rejoue le total de tous les déplacements (environ 572 comptes par image, 22 810 deg/s). Il faut lire d'abord puis vider : dans l'autre ordre, on ne lit jamais rien.
