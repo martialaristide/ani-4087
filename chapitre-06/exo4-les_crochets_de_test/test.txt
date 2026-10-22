@@ -1,0 +1,15 @@
+=== Exécution 1 : signe correct (r.x = -sin(lacet) * cos(tangage)) ===
+lacet 90, tangage 0 : attendu (-1.0000, 0.0000, 0.0000), obtenu (-1.0000, 0.0000, 0.0000), OK
+lacet 0, tangage 0 : attendu (0.0000, 0.0000, -1.0000), obtenu (0.0000, 0.0000, -1.0000), OK
+lacet 180, tangage 0 : attendu (0.0000, 0.0000, 1.0000), obtenu (0.0000, 0.0000, 1.0000), OK
+lacet 0, tangage 45 : attendu (0.0000, 0.7071, -0.7071), obtenu (0.0000, 0.7071, -0.7071), OK
+lacet 90, tangage 45 : attendu (-0.7071, 0.7071, 0.0000), obtenu (-0.7071, 0.7071, 0.0000), OK
+code de sortie : 0
+
+=== Exécution 2 : signe de x inversé volontairement (r.x = +sin(lacet) * cos(tangage)) ===
+lacet 90, tangage 0 : attendu (-1.0000, 0.0000, 0.0000), obtenu (1.0000, 0.0000, 0.0000), ECHEC
+lacet 0, tangage 0 : attendu (0.0000, 0.0000, -1.0000), obtenu (0.0000, 0.0000, -1.0000), OK
+lacet 180, tangage 0 : attendu (0.0000, 0.0000, 1.0000), obtenu (0.0000, 0.0000, 1.0000), OK
+lacet 0, tangage 45 : attendu (0.0000, 0.7071, -0.7071), obtenu (0.0000, 0.7071, -0.7071), OK
+lacet 90, tangage 45 : attendu (-0.7071, 0.7071, 0.0000), obtenu (0.7071, 0.7071, 0.0000), ECHEC
+code de sortie : 1

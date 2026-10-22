@@ -1,0 +1,8 @@
+Pourquoi cette direction :
+La convention est main droite : l'avant est -Z, le haut +Y, la droite +X. Un lacet positif tourne autour de +Y, dans le sens anti-horaire vu d'en haut, ce qui emmène -Z vers -X, c'est-à-dire vers la gauche. Pour un lacet de 90 degrés et un tangage nul, le regard doit donc être (-1, 0, 0). D'où la formule : x = -sin(lacet)*cos(tangage), y = sin(tangage), z = -cos(lacet)*cos(tangage). Les cinq valeurs attendues sont écrites en dur dans les épreuves à partir de cette convention ; elles ne sont pas recalculées avec la fonction testée.
+
+L'épreuve qui sait dire non :
+J'ai inversé volontairement le signe de x. Les épreuves 1 (lacet 90, tangage 0) et 5 (lacet 90, tangage 45) ont affiché ECHEC : obtenu (1, 0, 0) au lieu de (-1, 0, 0), et (0.7071, 0.7071, 0) au lieu de (-0.7071, 0.7071, 0). Le code de sortie est passé à 1. Les trois autres épreuves sont restées OK, car sin(0) et sin(180) valent 0 et ne révèlent pas le signe : c'est le lacet de 90 degrés qui fait la différence. Avec le bon signe rétabli, les cinq épreuves sont OK et le code de sortie est 0 (voir test.txt).
+
+Ce que la souris ne permettait pas :
+Avec la souris, il fallait ouvrir la fenêtre, bouger la main et juger à l'oeil si le regard allait du bon côté ; un angle exact comme 90 degrés n'est pas reproductible, et le verdict dépend d'une personne. Avec les crochets de test, les angles sont imposés exactement, aucune fenêtre n'est ouverte, personne n'a besoin de regarder, et le verdict est objectif (OK/ECHEC et code de sortie 0 ou 1). On peut le rejouer à chaque compilation et une inversion de signe est détectée immédiatement.
