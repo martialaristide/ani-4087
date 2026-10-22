@@ -1,0 +1,12 @@
+Debug, matrices : 658.093 ms
+Debug, quaternions : 164.780 ms
+Debug, matrices : 605.069 ms
+Debug, quaternions : 161.060 ms
+Debug, matrices : 637.530 ms
+Debug, quaternions : 148.333 ms
+Release, matrices : 86.019 ms
+Release, quaternions : 41.300 ms
+Release, matrices : 86.625 ms
+Release, quaternions : 58.320 ms
+Release, matrices : 103.814 ms
+Release, quaternions : 58.125 ms

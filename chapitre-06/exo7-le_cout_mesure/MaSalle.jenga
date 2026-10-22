@@ -1,0 +1,18 @@
+from Jenga import *
+
+with workspace("MaSalleCout"):
+    configurations(["Debug", "Release"])
+    useconfig("Kits/R3D/R3D.jenga")
+
+    with project("MaSalle"):
+        consoleapp()
+        language("C++")
+        cppdialect("C++17")
+        files(["cout.cpp"])
+        cxxflags(["-stdlib=libc++"])
+        ldflags(["-stdlib=libc++"])
+        user3d(modules=["NKMath", "NKTime"])
+
+        with filter("config:Release"):
+            optimize("Speed")
+            symbols(False)
