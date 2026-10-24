@@ -1,0 +1,2 @@
+ecran : 2069 images, moyenne 28.997 ms, ecart type 1.160 ms, max 38.894 ms, hors budget 2069
+sans attente : 2057 images, moyenne 29.163 ms, ecart type 1.202 ms, max 37.282 ms, hors budget 2057
