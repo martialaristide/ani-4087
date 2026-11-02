@@ -1,0 +1,38 @@
+Mes trente lignes :
+Les trente premières trames de ma salle, avec une chaîne de trois images tenue par mon programme (le rendu de la salle écrit toujours dans le tampon du moteur, pas dans ces trois images). L'image employée suit le cycle 0, 1, 2, 0, 1, 2 sur les trente trames, soit dix tours complets (30 / 3 = 10, calcul). L'image soumise vaut à chaque trame l'image employée : c'est la dernière relâchée, lue après la libération, la bonne lecture du chapitre 11. Les lignes :
+trame  1 : image employee 0, image soumise 0
+trame  2 : image employee 1, image soumise 1
+trame  3 : image employee 2, image soumise 2
+trame  4 : image employee 0, image soumise 0
+trame  5 : image employee 1, image soumise 1
+trame  6 : image employee 2, image soumise 2
+trame  7 : image employee 0, image soumise 0
+trame  8 : image employee 1, image soumise 1
+trame  9 : image employee 2, image soumise 2
+trame 10 : image employee 0, image soumise 0
+trame 11 : image employee 1, image soumise 1
+trame 12 : image employee 2, image soumise 2
+trame 13 : image employee 0, image soumise 0
+trame 14 : image employee 1, image soumise 1
+trame 15 : image employee 2, image soumise 2
+trame 16 : image employee 0, image soumise 0
+trame 17 : image employee 1, image soumise 1
+trame 18 : image employee 2, image soumise 2
+trame 19 : image employee 0, image soumise 0
+trame 20 : image employee 1, image soumise 1
+trame 21 : image employee 2, image soumise 2
+trame 22 : image employee 0, image soumise 0
+trame 23 : image employee 1, image soumise 1
+trame 24 : image employee 2, image soumise 2
+trame 25 : image employee 0, image soumise 0
+trame 26 : image employee 1, image soumise 1
+trame 27 : image employee 2, image soumise 2
+trame 28 : image employee 0, image soumise 0
+trame 29 : image employee 1, image soumise 1
+trame 30 : image employee 2, image soumise 2
+
+Le minimum d'images :
+Je le déduis des conflits de resultat.txt. Une image n'est jamais en conflit quand le nombre d'images n dépasse L : 1 image avec L = 0 donne 0 conflit, 2 images avec L = 1 en donnent 0, 3 images avec L = 2 en donnent 0. Dès que n est au plus égal à L, des conflits apparaissent : 1 image avec L = 1 en donne 5 (toutes les trames sauf la première), 2 images avec L = 2 en donnent 4 (les trames 3 à 6). Raison : l'image peinte à la trame u est repeinte à la trame u + n, alors que le compositeur la lit encore jusqu'à la trame u + L ; il y a conflit exactement quand n <= L, donc le minimum est n = L + 1 (raisonnement, vérifié sur les cinq scénarios). Deux images suffisent donc quand L vaut 1, pas quand L vaut 2, et il en faut trois pour L = 2.
+
+Sur le simulateur :
+Sur le simulateur, le compositeur lit après le rendu, donc L vaut 0 : le scénario 1 0 6 donne 0 conflit avec une seule image. Trois images n'apportent donc rien de visible ici : le dessin à l'écran est le même, et je n'ai pas mesuré de différence entre une et trois images (ni de temps de trame, ni de rendu), ni essayé sur un vrai casque. Ma chaîne est tenue par mon programme, pas par une chaîne du moteur. Ce qu'elle apporte quand même, c'est de m'obliger à écrire la discipline avec plusieurs images : emprunter, rendre, soumettre la dernière relâchée. Avec une seule image, les fautes d'index de l'exercice 8 restent invisibles ; avec un cycle de trois, une mauvaise lecture se verrait dès la première trame. Et c'est la bonne préparation pour un vrai runtime où L vaut 1 ou 2, qui exigerait ces images.
