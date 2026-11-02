@@ -1,0 +1,20 @@
+Images paires et impaires :
+Avec deux images et les modes D P D P D P D P, les trames impaires (1, 3, 5, 7) montrent les positions 10, 30, 50 et 70 mm, qui sont celles de la caméra à cet instant (x0 + v × t avec t = 1, 3, 5, 7) : le mode D lit l'index après ReleaseImage, il désigne l'image que l'on vient de peindre. Les trames paires (2, 4, 6, 8) montrent aussi 10, 30, 50 et 70 mm, alors que la caméra est à 20, 40, 60 et 80 mm : le mode P lit l'index avant ReleaseImage, il désigne l'emplacement de la trame précédente, donc ces trames montrent la position de la trame t - 1, un pas de 10 mm en retard. Les sauts sont donc 0, 20, 0, 20, 0, 20, 0 (trame 1 sans saut, faute de trame précédente) : une trame sur deux l'image reste immobile, puis la suivante rattrape deux pas d'un coup. SAUT MIN 0, SAUT MAX 20, TREMBLE OUI. Le déplacement total montré est le bon (70 - 10 = 60 mm en 7 sauts, soit 3 sauts de 20 mm, calcul), mais il est donné à coups alternés de 0 et 20 mm au lieu de 10 mm à chaque trame.
+
+Avec une seule image :
+Avec n = 1, la même entrée donne cette sortie :
+1 10 -
+2 20 10
+3 30 10
+4 40 10
+5 50 10
+6 60 10
+7 70 10
+8 80 10
+SAUT MIN 10
+SAUT MAX 10
+TREMBLE NON
+Tous les sauts valent 10 mm, la caméra avance régulièrement et rien ne tremble. Avec une seule image la prochaine vaut toujours 0 et (prochaine + n - 1) % n = 0 dans tous les modes (calcul) : l'index lu avant ou après la libération désigne le même emplacement, qui contient toujours la trame que l'on vient de peindre. La faute ne se voit pas, et c'est ce qui la cache sur un simulateur qui tourne avec une seule image.
+
+La bonne lecture :
+La bonne lecture est celle du mode D : lire l'index de la dernière image relâchée après ReleaseImage. Une fois la libération faite, la prochaine a avancé, et (prochaine + n - 1) % n recule d'un cran vers l'image que l'on vient de rendre, c'est-à-dire celle que l'on vient de peindre. Lu avant la libération, la même formule désigne l'image de la trame d'avant. Mes résultats le montrent : les trames en mode D (impaires) affichent la position courante de la caméra, les trames en mode P (paires) affichent un pas de retard. Avec deux images la chaîne n'est donc correcte que si l'index est lu après ReleaseImage, à chaque trame : c'est l'alternance entre les deux lectures qui fait trembler, et non seulement le retard d'une trame (l'énoncé précise qu'un décalage constant ne tremble pas ; je n'ai pas lancé ce cas).
