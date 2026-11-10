@@ -1,0 +1,17 @@
+TABLE 1
+INACTIVE saisir_g
+1 -
+2 tirer
+3 saisir
+4 -
+5 menu
+6 -
+TABLE 2
+INACTIVE saisir_g
+1 -
+2 tirer
+3 saisir
+4 -
+5 menu
+6 -
+IDENTIQUES OUI
